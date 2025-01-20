@@ -57,4 +57,76 @@ if uploaded_file:
     # User Inputs
     domain = st.text_input("Enter the domain to strip (e.g., example.com):")
     wild_start = st.checkbox("Allow wildcard matching at the start of the string", value=False)
-    wild_end = st.checkbox("Allow wildcard matching at the end of the string", value
+    wild_end = st.checkbox("Allow wildcard matching at the end of the string", value=False)
+    case_sensitive = st.checkbox("Case-sensitive matching", value=True)
+    negative_match = st.checkbox("Generate a negative match regex", value=False)
+
+    # Generate Regex
+    regex = None
+    if st.button("Generate Regex"):
+        if not domain:
+            st.error("Please enter a domain.")
+        else:
+            regex = build_regex(urls, domain, wild_start, wild_end, case_sensitive, negative_match)
+            st.subheader("Generated Regex:")
+            st.code(regex)
+
+            # Option to download the regex
+            st.download_button(
+                label="Download Regex",
+                data=regex,
+                file_name="regex.txt",
+                mime="text/plain"
+            )
+
+    # Regex Tester
+    if regex:
+        st.subheader("Regex Tester")
+        test_strings = st.text_area("Enter test strings (one per line):", height=150)
+        if st.button("Test Regex"):
+            if test_strings.strip():
+                test_results = []
+                for test_string in test_strings.splitlines():
+                    match = re.search(regex, test_string.strip(), flags=0 if case_sensitive else re.IGNORECASE)
+                    if match:
+                        test_results.append(f"✅ Matched: {test_string.strip()}")
+                    else:
+                        test_results.append(f"❌ No Match: {test_string.strip()}")
+                st.write("\n".join(test_results))
+            else:
+                st.error("Please enter test strings to evaluate.")
+
+# Instructions Section
+with st.expander("Instructions: How to Use This App"):
+    st.markdown("""
+    ### Steps to Use the Regex Generator:
+    1. **Prepare Your File**:
+       - Create a `.txt` file with one URL per line.
+       - Example:
+         ```
+         https://example.com/path/to/resource
+         http://example.com/another/path
+         https://example.com/third/path
+         ```
+    2. **Upload the File**:
+       - Use the "Upload a .txt file with URLs" option to upload your file.
+    3. **Configure Regex Options**:
+       - **Enter Domain**: Provide the domain you want to strip (e.g., `example.com`).
+       - **Wildcard Options**:
+         - Enable "Allow wildcard matching at the start of the string" to allow partial matches at the beginning.
+         - Enable "Allow wildcard matching at the end of the string" to allow partial matches at the end.
+       - **Case Sensitivity**:
+         - Enable "Case-sensitive matching" for exact matches.
+         - Disable it to ignore case differences.
+       - **Negative Match**:
+         - Enable "Generate a negative match regex" to exclude URLs that match the patterns.
+    4. **Generate the Regex**:
+       - Click "Generate Regex" to create the regex based on your settings.
+    5. **Test the Regex**:
+       - Enter test strings in the "Regex Tester" section to verify matches.
+       - Click "Test Regex" to see results for each test string.
+    6. **Download the Regex**:
+       - Use the "Download Regex" button to save the regex as a `.txt` file.
+    7. **Use the Regex**:
+       - Copy the generated regex or use the downloaded file for your project.
+    """)
