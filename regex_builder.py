@@ -101,14 +101,6 @@ if urls:
         st.subheader("Generated Regex:")
         st.code(regex)
 
-        # Option to download the regex
-        st.download_button(
-            label="Download Regex",
-            data=regex,
-            file_name="regex.txt",
-            mime="text/plain"
-        )
-
         # Real-Time Regex Tester
         st.subheader("Regex Tester")
         test_strings = st.text_area("Enter test strings (one per line):", height=150)
