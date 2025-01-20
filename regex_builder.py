@@ -80,9 +80,9 @@ if uploaded_file:
             for test_string in test_strings.splitlines():
                 match = re.search(regex, test_string.strip(), flags=flags)
                 if match:
-                    test_results.append(f"✅ **Matched**: `{test_string.strip()}`")
+                    test_results.append(f"✅ `{test_string.strip()}`")
                 else:
-                    test_results.append(f"❌ **No Match**: `{test_string.strip()}`")
+                    test_results.append(f"❌ `{test_string.strip()}`")
                     
             # Join results with newlines for better readability
             st.text("\n".join(test_results))
