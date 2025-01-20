@@ -21,7 +21,9 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
     stripped_paths = []
     for url in urls:
         stripped_url = re.sub(rf"https?://{re.escape(domain)}/?", "", url.strip(), flags=flags)
-        stripped_paths.append(re.escape(stripped_url))
+        # Escape slashes but leave dashes unescaped
+        stripped_url = stripped_url.replace("/", r"\/")
+        stripped_paths.append(stripped_url)
 
     regex_parts = []
     for path in stripped_paths:
