@@ -1,9 +1,39 @@
 import re
 import streamlit as st
+from collections import defaultdict
+
+def optimize_regex(patterns):
+    """
+    Optimize regex patterns by grouping common prefixes and suffixes.
+    
+    Args:
+        patterns (list of str): List of individual regex patterns.
+
+    Returns:
+        str: Optimized regex string.
+    """
+    # Group patterns by common prefixes
+    prefix_dict = defaultdict(list)
+    for pattern in patterns:
+        prefix = pattern.split("/")[1]  # Assume first segment as prefix
+        prefix_dict[prefix].append(pattern)
+
+    optimized_patterns = []
+    for prefix, paths in prefix_dict.items():
+        if len(paths) > 1:
+            # Consolidate paths with the same prefix
+            suffixes = [p[len(prefix) + 1:] for p in paths]
+            optimized_patterns.append(f"^\/{prefix}({ '|'.join(suffixes) })$")
+        else:
+            # Single path remains unchanged
+            optimized_patterns.append(paths[0])
+
+    return "|".join(optimized_patterns)
+
 
 def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=True, negative_match=False):
     """
-    Builds regex patterns based on user preferences.
+    Builds regex patterns based on user preferences and optimizes them.
 
     Args:
         urls (list of str): List of URLs.
@@ -14,20 +44,19 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
         negative_match (bool): Create a negative match regex.
 
     Returns:
-        str: Generated regex pattern.
+        str: Generated and optimized regex pattern.
     """
     flags = 0 if case_sensitive else re.IGNORECASE
 
     stripped_paths = []
     for url in urls:
         stripped_url = re.sub(rf"https?://{re.escape(domain)}/?", "", url.strip(), flags=flags)
-        # Ensure paths start with a "/"
         if not stripped_url.startswith("/"):
             stripped_url = "/" + stripped_url
-        # Escape slashes but leave dashes unescaped
         stripped_url = stripped_url.replace("/", r"\/")
         stripped_paths.append(stripped_url)
 
+    # Add start and end anchors if wildcards are not enabled
     regex_parts = []
     for path in stripped_paths:
         if not wild_start:
@@ -36,11 +65,13 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
             path += "$"
         regex_parts.append(path)
 
-    pattern = "|".join(regex_parts)
+    # Optimize the regex
+    optimized_regex = optimize_regex(regex_parts)
     if negative_match:
-        pattern = f"^(?!{pattern}).*$"
+        optimized_regex = f"^(?!{optimized_regex}).*$"
 
-    return pattern
+    return optimized_regex
+
 
 # Streamlit App
 st.title("Regex Generator for URL Matching")
