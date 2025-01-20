@@ -16,31 +16,24 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
     Returns:
         str: Generated regex pattern.
     """
-    # Define the regex flags
     flags = 0 if case_sensitive else re.IGNORECASE
 
-    # Strip protocol and domain (handle http and https)
     stripped_paths = []
     for url in urls:
         stripped_url = re.sub(rf"https?://{re.escape(domain)}/?", "", url.strip(), flags=flags)
-        stripped_paths.append(re.escape(stripped_url))  # Escape special regex characters
+        stripped_paths.append(re.escape(stripped_url))
 
-    # Build the regex pattern
     regex_parts = []
     for path in stripped_paths:
-        # Add anchors or wildcards as specified
         if not wild_start:
-            path = "^" + path  # Anchor to start of string
+            path = "^" + path
         if not wild_end:
-            path += "$"  # Anchor to end of string
-        
+            path += "$"
         regex_parts.append(path)
 
-    # Combine parts into a single pattern
-    pattern = "|".join(regex_parts)  # Match any of the URLs
-    
+    pattern = "|".join(regex_parts)
     if negative_match:
-        pattern = f"^(?!{pattern}).*$"  # Negative lookahead to exclude matches
+        pattern = f"^(?!{pattern}).*$"
 
     return pattern
 
@@ -62,39 +55,33 @@ if uploaded_file:
     negative_match = st.checkbox("Generate a negative match regex", value=False)
 
     # Generate Regex
-    regex = None
-    if st.button("Generate Regex"):
-        if not domain:
-            st.error("Please enter a domain.")
-        else:
-            regex = build_regex(urls, domain, wild_start, wild_end, case_sensitive, negative_match)
-            st.subheader("Generated Regex:")
-            st.code(regex)
+    if domain:
+        regex = build_regex(urls, domain, wild_start, wild_end, case_sensitive, negative_match)
+        st.subheader("Generated Regex:")
+        st.code(regex)
 
-            # Option to download the regex
-            st.download_button(
-                label="Download Regex",
-                data=regex,
-                file_name="regex.txt",
-                mime="text/plain"
-            )
+        # Option to download the regex
+        st.download_button(
+            label="Download Regex",
+            data=regex,
+            file_name="regex.txt",
+            mime="text/plain"
+        )
 
-    # Regex Tester
-    if regex:
+        # Real-Time Regex Tester
         st.subheader("Regex Tester")
         test_strings = st.text_area("Enter test strings (one per line):", height=150)
-        if st.button("Test Regex"):
-            if test_strings.strip():
-                test_results = []
-                for test_string in test_strings.splitlines():
-                    match = re.search(regex, test_string.strip(), flags=0 if case_sensitive else re.IGNORECASE)
-                    if match:
-                        test_results.append(f"✅ Matched: {test_string.strip()}")
-                    else:
-                        test_results.append(f"❌ No Match: {test_string.strip()}")
-                st.write("\n".join(test_results))
-            else:
-                st.error("Please enter test strings to evaluate.")
+        if test_strings.strip():
+            st.write("### Test Results:")
+            test_results = []
+            flags = 0 if case_sensitive else re.IGNORECASE
+            for test_string in test_strings.splitlines():
+                match = re.search(regex, test_string.strip(), flags=flags)
+                if match:
+                    test_results.append(f"✅ **Matched**: `{test_string.strip()}`")
+                else:
+                    test_results.append(f"❌ **No Match**: `{test_string.strip()}`")
+            st.write("\n".join(test_results))
 
 # Instructions Section
 with st.expander("Instructions: How to Use This App"):
@@ -121,10 +108,9 @@ with st.expander("Instructions: How to Use This App"):
        - **Negative Match**:
          - Enable "Generate a negative match regex" to exclude URLs that match the patterns.
     4. **Generate the Regex**:
-       - Click "Generate Regex" to create the regex based on your settings.
-    5. **Test the Regex**:
-       - Enter test strings in the "Regex Tester" section to verify matches.
-       - Click "Test Regex" to see results for each test string.
+       - The app will display the generated regex below the input fields.
+    5. **Test the Regex in Real-Time**:
+       - Enter test strings in the "Regex Tester" section to verify matches in real-time.
     6. **Download the Regex**:
        - Use the "Download Regex" button to save the regex as a `.txt` file.
     7. **Use the Regex**:
