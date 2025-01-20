@@ -21,6 +21,9 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
     stripped_paths = []
     for url in urls:
         stripped_url = re.sub(rf"https?://{re.escape(domain)}/?", "", url.strip(), flags=flags)
+        # Ensure paths start with a "/"
+        if not stripped_url.startswith("/"):
+            stripped_url = "/" + stripped_url
         # Escape slashes but leave dashes unescaped
         stripped_url = stripped_url.replace("/", r"\/")
         stripped_paths.append(stripped_url)
@@ -38,7 +41,6 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
         pattern = f"^(?!{pattern}).*$"
 
     return pattern
-
 
 # Streamlit App
 st.title("Regex Generator for URL Matching")
