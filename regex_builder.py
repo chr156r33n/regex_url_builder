@@ -43,11 +43,17 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
 # Streamlit App
 st.title("Regex Generator for URL Matching")
 
-# File Upload
-uploaded_file = st.file_uploader("Upload a .txt file with URLs", type="txt")
-if uploaded_file:
-    urls = uploaded_file.read().decode("utf-8").splitlines()
-    st.success("File uploaded successfully!")
+# URL Input
+st.subheader("Enter URLs")
+url_input = st.text_area(
+    "Paste your URLs (one per line):",
+    placeholder="https://example.com/path1\nhttp://example.com/path2\nhttps://example.com/path3",
+    height=200
+)
+urls = url_input.splitlines() if url_input.strip() else []
+
+if urls:
+    st.success(f"Detected {len(urls)} URLs.")
 
     # User Inputs
     domain = st.text_input("Enter the domain to strip (e.g., example.com):")
@@ -83,7 +89,6 @@ if uploaded_file:
                     test_results.append(f"✅ `{test_string.strip()}`")
                 else:
                     test_results.append(f"❌ `{test_string.strip()}`")
-                    
             # Join results with newlines for better readability
             st.text("\n".join(test_results))
 
@@ -91,17 +96,15 @@ if uploaded_file:
 with st.expander("Instructions: How to Use This App"):
     st.markdown("""
     ### Steps to Use the Regex Generator:
-    1. **Prepare Your File**:
-       - Create a `.txt` file with one URL per line.
+    1. **Enter URLs**:
+       - Paste URLs directly into the "Enter URLs" text field (one URL per line).
        - Example:
          ```
          https://example.com/path/to/resource
          http://example.com/another/path
          https://example.com/third/path
          ```
-    2. **Upload the File**:
-       - Use the "Upload a .txt file with URLs" option to upload your file.
-    3. **Configure Regex Options**:
+    2. **Configure Regex Options**:
        - **Enter Domain**: Provide the domain you want to strip (e.g., `example.com`).
        - **Wildcard Options**:
          - Enable "Allow wildcard matching at the start of the string" to allow partial matches at the beginning.
@@ -111,12 +114,12 @@ with st.expander("Instructions: How to Use This App"):
          - Disable it to ignore case differences.
        - **Negative Match**:
          - Enable "Generate a negative match regex" to exclude URLs that match the patterns.
-    4. **Generate the Regex**:
+    3. **Generate the Regex**:
        - The app will display the generated regex below the input fields.
-    5. **Test the Regex in Real-Time**:
+    4. **Test the Regex in Real-Time**:
        - Enter test strings in the "Regex Tester" section to verify matches in real-time.
-    6. **Download the Regex**:
+    5. **Download the Regex**:
        - Use the "Download Regex" button to save the regex as a `.txt` file.
-    7. **Use the Regex**:
+    6. **Use the Regex**:
        - Copy the generated regex or use the downloaded file for your project.
     """)
