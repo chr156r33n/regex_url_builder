@@ -74,17 +74,18 @@ if uploaded_file:
         st.subheader("Regex Tester")
         test_strings = st.text_area("Enter test strings (one per line):", height=150)
         if test_strings.strip():
-        st.write("### Test Results:")
-        test_results = []
-        flags = 0 if case_sensitive else re.IGNORECASE
-        for test_string in test_strings.splitlines():
-            match = re.search(regex, test_string.strip(), flags=flags)
-            if match:
-                test_results.append(f"✅ **Matched**: `{test_string.strip()}`")
-            else:
-                test_results.append(f"❌ **No Match**: `{test_string.strip()}`")
-        # Join results with newlines for better readability
-        st.text("\n".join(test_results))
+            st.write("### Test Results:")
+            test_results = []
+            flags = 0 if case_sensitive else re.IGNORECASE
+            for test_string in test_strings.splitlines():
+                match = re.search(regex, test_string.strip(), flags=flags)
+                if match:
+                    test_results.append(f"✅ **Matched**: `{test_string.strip()}`")
+                else:
+                    test_results.append(f"❌ **No Match**: `{test_string.strip()}`")
+                    
+            # Join results with newlines for better readability
+            st.text("\n".join(test_results))
 
 # Instructions Section
 with st.expander("Instructions: How to Use This App"):
