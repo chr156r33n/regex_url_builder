@@ -14,14 +14,14 @@ def optimize_regex(patterns):
     """
     prefix_dict = defaultdict(list)
     for pattern in patterns:
-        parts = pattern.lstrip("/").split("/")
+        parts = pattern.split("/")
         prefix = parts[0] if parts else ""
         prefix_dict[prefix].append(pattern)
     
     optimized_patterns = []
     for prefix, paths in prefix_dict.items():
         if len(paths) > 1:
-            suffixes = [p[len(prefix) + 1:] for p in paths]
+            suffixes = [p[len(prefix):] for p in paths]
             optimized_patterns.append(f"{prefix}({ '|'.join(suffixes) })")
         else:
             optimized_patterns.append(paths[0])
@@ -47,14 +47,13 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
     
     stripped_paths = []
     for url in urls:
-        stripped_url = re.sub(rf"https?://{re.escape(domain)}(?:/)?", "", url.strip(), flags=flags)
-        stripped_url = stripped_url.lstrip("/")  # Remove leading slash to prevent double slashes
+        stripped_url = re.sub(rf"https?://{re.escape(domain)}/?", "", url.strip(), flags=flags)
         stripped_paths.append(stripped_url)
     
     regex_parts = []
     for path in stripped_paths:
         if not wild_start:
-            path = "^" + path
+            path = "^" + path.lstrip("/")  # Ensure no leading slash in regex
         if not wild_end:
             path += "$"
         regex_parts.append(path)
