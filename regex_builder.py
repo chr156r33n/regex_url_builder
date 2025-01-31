@@ -22,7 +22,7 @@ def optimize_regex(patterns):
     for prefix, paths in prefix_dict.items():
         if len(paths) > 1:
             suffixes = [p[len(prefix) + 1:] for p in paths]
-            optimized_patterns.append(f"^\/{prefix}({ '|'.join(suffixes) })$")
+            optimized_patterns.append(f"{prefix}({ '|'.join(suffixes) })")
         else:
             optimized_patterns.append(paths[0])
     
@@ -48,7 +48,7 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
     stripped_paths = []
     for url in urls:
         stripped_url = re.sub(rf"https?://{re.escape(domain)}(?:/)?", "", url.strip(), flags=flags)
-        stripped_url = "/" + stripped_url.lstrip("/")  # Ensure leading slash
+        stripped_url = stripped_url.lstrip("/")  # Remove leading slash to prevent double slashes
         stripped_paths.append(stripped_url)
     
     regex_parts = []
