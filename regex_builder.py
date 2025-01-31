@@ -14,8 +14,8 @@ def optimize_regex(patterns):
     """
     prefix_dict = defaultdict(list)
     for pattern in patterns:
-        parts = pattern.split("/")
-        prefix = parts[1] if len(parts) > 1 else ""
+        parts = pattern.lstrip("/").split("/")
+        prefix = parts[0] if parts else ""
         prefix_dict[prefix].append(pattern)
     
     optimized_patterns = []
@@ -48,8 +48,7 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
     stripped_paths = []
     for url in urls:
         stripped_url = re.sub(rf"https?://{re.escape(domain)}(?:/)?", "", url.strip(), flags=flags)
-        if stripped_url and not stripped_url.startswith("/"):
-            stripped_url = "/" + stripped_url
+        stripped_url = "/" + stripped_url.lstrip("/")  # Ensure leading slash
         stripped_paths.append(stripped_url)
     
     regex_parts = []
