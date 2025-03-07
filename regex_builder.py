@@ -68,6 +68,7 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
 
 # Streamlit App
 st.title("Regex Generator for URL Matching")
+st.markdown("By Chris Green [www.chris-green.net](https://www.chris-green.net/)")
 
 # URL Input
 st.subheader("Enter URLs")
