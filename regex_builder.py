@@ -68,7 +68,20 @@ def build_regex(urls, domain, wild_start=False, wild_end=False, case_sensitive=T
 
 # Streamlit App
 st.title("Regex Generator for URL Matching")
-st.markdown("By Chris Green [www.chris-green.net](https://www.chris-green.net/)")
+st.markdown("By Chris Green [www.chris-green.net](https://www.chris-green.net/). [LinkedIn](https://www.linkedin.com/in/chrisgreenseo/). [BlueSky](https://bsky.app/profile/chris-green.net)")
+
+with st.expander("Instructions: How to Use This App"):
+    st.markdown("""
+    ### Steps to Use the Regex Generator:
+    1. **Enter URLs**:
+       - Paste URLs directly into the "Enter URLs" text field (one URL per line).
+    2. **Configure Regex Options**:
+       - **Enter Domain**: Provide the domain you want to strip (e.g., `example.com`).
+       - **Wildcard Options**: Enable partial matching at the start or end.
+       - **Case Sensitivity**: Enable/Disable case-sensitive matching.
+       - **Negative Match**: Exclude URLs that match the patterns.
+    3. **Generate and Test the Regex**.
+    """)
 
 # URL Input
 st.subheader("Enter URLs")
@@ -104,15 +117,4 @@ if urls:
                 test_results.append(f"✅ `{test_string.strip()}`" if match else f"❌ `{test_string.strip()}`")
             st.text("\n".join(test_results))
 
-with st.expander("Instructions: How to Use This App"):
-    st.markdown("""
-    ### Steps to Use the Regex Generator:
-    1. **Enter URLs**:
-       - Paste URLs directly into the "Enter URLs" text field (one URL per line).
-    2. **Configure Regex Options**:
-       - **Enter Domain**: Provide the domain you want to strip (e.g., `example.com`).
-       - **Wildcard Options**: Enable partial matching at the start or end.
-       - **Case Sensitivity**: Enable/Disable case-sensitive matching.
-       - **Negative Match**: Exclude URLs that match the patterns.
-    3. **Generate and Test the Regex**.
-    """)
+
